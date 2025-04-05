@@ -1,15 +1,9 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.nikola352.aicodecompletionidea</id>
-    <name>ai-code-completion-idea</name>
-    <vendor>nikola352</vendor>
+    <id>com.github.nikola352.ai-code-completion-idea</id>
+    <name>AI Code Completion</name>
+    <vendor>Nikola352</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.nikola352.aicodecompletionidea.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.nikola352.aicodecompletionidea.startup.MyProjectActivity" />
-    </extensions>
 </idea-plugin>
