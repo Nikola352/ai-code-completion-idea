@@ -6,4 +6,11 @@
 
     <depends>com.intellij.modules.platform</depends>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <inline.completion.provider
+                implementation="com.github.nikola352.aicodecompletionidea.provider.AICodeCompletionProvider"/>
+        <applicationService
+                serviceInterface="com.github.nikola352.aicodecompletionidea.llm.LLMCompletionService"
+                serviceImplementation="com.github.nikola352.aicodecompletionidea.llm.OllamaCompletionService"/>
+    </extensions>
 </idea-plugin>
