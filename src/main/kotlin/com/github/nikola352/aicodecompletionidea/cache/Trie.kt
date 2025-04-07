@@ -7,24 +7,22 @@ package com.github.nikola352.aicodecompletionidea.cache
  *
  * Values are natural extensions of keys, so queries with keys consisting of saved key plus a prefix of the value are supported.
  */
-class Trie<StatsType> {
+class Trie {
 
     inner class Node(
-        val children: MutableMap<Char, Node> = mutableMapOf(),
         var completion: String? = null,
-        var stats: StatsType? = null,
+        val children: MutableMap<Char, Node> = mutableMapOf(),
     )
 
     private val root: Node = Node()
 
     /** Inserts a key-value pair into a trie with optional arbitrary additional information. */
-    fun insert(key: String, value: String, stats: StatsType? = null) {
+    fun insert(key: String, value: String) {
         var node = root
         for (char in key) {
             node = node.children.getOrPut(char) { Node() }
         }
         node.completion = value
-        node.stats = stats
     }
 
     /**
@@ -62,7 +60,7 @@ class Trie<StatsType> {
      * Returns null if the key does not match or if the suffix is empty (full string match).
      */
     private fun String.getMatch(key: String, offset: Int): String? {
-        if(offset == key.length) return this
+        if (offset == key.length) return this
         for (i in indices) {
             if (this[i] != key[i + offset]) {
                 return null
@@ -72,5 +70,32 @@ class Trie<StatsType> {
             }
         }
         return null
+    }
+
+    /** Removes a node with the given key from the trie */
+    fun remove(key: String) {
+        remove(root, key, 0)
+    }
+
+    private fun remove(node: Node, key: String, index: Int): Boolean {
+        if (index == key.length) {
+            if (node.completion != null) {
+                node.completion = null
+                return node.children.isEmpty()
+            }
+            return false
+        }
+
+        val char = key[index]
+        val child = node.children[char] ?: return false
+
+        val shouldDeleteChild = remove(child, key, index + 1)
+
+        if (shouldDeleteChild) {
+            node.children.remove(char)
+            return node.completion == null && node.children.isEmpty()
+        }
+
+        return false
     }
 }
