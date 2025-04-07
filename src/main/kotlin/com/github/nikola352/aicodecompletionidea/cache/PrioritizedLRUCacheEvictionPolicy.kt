@@ -118,16 +118,12 @@ class PrioritizedLRUCacheEvictionPolicy<K>(
      * Evicts the element with the least priority amongst the top [evictionSetSize] least recently used elements.
      */
     private fun evict(): Node<K>? {
-        if (head.next == null || head.next == tail) {
-            return null
-        }
-
         var minNode: Node<K>? = null
 
-        var node = head
+        var node = tail
         var count = 0
-        while (count < evictionSetSize && node.next != tail) {
-            node = node.next ?: break
+        while (count < evictionSetSize && node.previous != tail) {
+            node = node.previous ?: break
             count++
             if (minNode == null || node.priority < minNode.priority) {
                 minNode = node
