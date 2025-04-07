@@ -2,6 +2,7 @@ package com.github.nikola352.aicodecompletionidea.provider
 
 import com.github.nikola352.aicodecompletionidea.MAX_PREFIX_LENGTH
 import com.github.nikola352.aicodecompletionidea.MAX_SUFFIX_LENGTH
+import com.github.nikola352.aicodecompletionidea.cache.CodeCompletionCache
 import com.github.nikola352.aicodecompletionidea.llm.LLMCompletionService
 import com.github.nikola352.aicodecompletionidea.syntax.analyzer.shouldBeSkippedOnPosition
 import com.github.nikola352.aicodecompletionidea.util.splitAtOffset
@@ -21,15 +22,17 @@ class AICodeCompletionProvider : InlineCompletionProvider {
     override val id get() = InlineCompletionProviderID("AICodeCompletionIdeaInlineCompletionProvider")
 
     override suspend fun getSuggestion(request: InlineCompletionRequest): InlineCompletionSuggestion {
+        val cacheService = request.editor.project?.service<CodeCompletionCache>()
         val llmService = service<LLMCompletionService>()
         return InlineCompletionSingleSuggestion.build(elements = channelFlow {
             val (prefix, suffix) = request.document.text.splitAtOffsetForContext(request.startOffset)
+            var value = cacheService?.get(prefix)
+            if(value == null) {
+                value = llmService.getCompletion(prefix, suffix)
+                cacheService?.set(prefix, value)
+            }
             launch {
-                trySend(
-                    InlineCompletionGrayTextElement(
-                        llmService.getCompletion(prefix, suffix)
-                    )
-                )
+                trySend(InlineCompletionGrayTextElement(value))
             }
         })
     }
