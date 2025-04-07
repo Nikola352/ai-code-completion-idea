@@ -1,8 +1,10 @@
 package com.github.nikola352.aicodecompletionidea.provider
 
+import com.github.nikola352.aicodecompletionidea.MAX_PREFIX_LENGTH
+import com.github.nikola352.aicodecompletionidea.MAX_SUFFIX_LENGTH
 import com.github.nikola352.aicodecompletionidea.llm.LLMCompletionService
 import com.github.nikola352.aicodecompletionidea.syntax.analyzer.shouldBeSkippedOnPosition
-import com.github.nikola352.aicodecompletionidea.util.splitUsingOffset
+import com.github.nikola352.aicodecompletionidea.util.splitAtOffset
 import com.intellij.codeInsight.inline.completion.InlineCompletionEvent
 import com.intellij.codeInsight.inline.completion.InlineCompletionProvider
 import com.intellij.codeInsight.inline.completion.InlineCompletionProviderID
@@ -21,7 +23,7 @@ class AICodeCompletionProvider : InlineCompletionProvider {
     override suspend fun getSuggestion(request: InlineCompletionRequest): InlineCompletionSuggestion {
         val llmService = service<LLMCompletionService>()
         return InlineCompletionSingleSuggestion.build(elements = channelFlow {
-            val (prefix, suffix) = request.document.text.splitUsingOffset(request.startOffset)
+            val (prefix, suffix) = request.document.text.splitAtOffsetForContext(request.startOffset)
             launch {
                 trySend(
                     InlineCompletionGrayTextElement(
@@ -36,5 +38,14 @@ class AICodeCompletionProvider : InlineCompletionProvider {
         return event is InlineCompletionEvent.DocumentChange && event.editor.run {
             !document.text.shouldBeSkippedOnPosition(caretModel.offset)
         }
+    }
+
+    /**
+     * Splits the string into prefix and suffix at a given caret offset,
+     * truncating the parts based on maximum length policy.
+     */
+    private fun String.splitAtOffsetForContext(offset: Int): Pair<String, String> {
+        val (prefix, suffix) = splitAtOffset(offset)
+        return prefix.takeLast(MAX_PREFIX_LENGTH) to suffix.take(MAX_SUFFIX_LENGTH)
     }
 }

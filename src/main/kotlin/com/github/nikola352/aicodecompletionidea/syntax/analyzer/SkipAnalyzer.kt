@@ -9,7 +9,8 @@ package com.github.nikola352.aicodecompletionidea.syntax.analyzer
  * @return `true` if the caret position should be skipped for suggestions, `false` otherwise.
  */
 fun String.shouldBeSkippedOnPosition(offset: Int): Boolean = with(CaretContext(this, offset)) {
-    afterSemicolon()
+    offset == 0
+            || afterSemicolon()
             || afterLBrace()
             || afterRBrace()
             || beforeLParenthesis()

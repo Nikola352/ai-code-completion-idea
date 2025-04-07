@@ -16,8 +16,8 @@ data class CaretContext(
      * @param offset The current position of the caret within the text.
      */
     constructor(text: String, offset: Int) : this(
-        beforeCaret = if (offset > 0) text[offset - 1] else '\u0000',
-        afterCaret = if (offset < text.length) text[offset] else '\u0000',
+        beforeCaret = if (offset > 0) text[offset] else '\u0000',
+        afterCaret = if (offset < text.length-1) text[offset+1] else '\u0000',
         text = text,
         offset = offset
     )

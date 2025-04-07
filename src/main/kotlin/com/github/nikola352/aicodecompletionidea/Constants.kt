@@ -7,3 +7,5 @@ package com.github.nikola352.aicodecompletionidea
  */
 
 const val OLLAMA_HOST = "http://localhost:11434/"
+const val MAX_PREFIX_LENGTH = 2000
+const val MAX_SUFFIX_LENGTH = 200
