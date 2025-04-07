@@ -1,51 +1,93 @@
-# ai-code-completion-idea
+# IntelliJ AI Code Completion Plugin
 
-![Build](https://github.com/Nikola352/ai-code-completion-idea/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.1.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![IntelliJ Platform](https://img.shields.io/badge/IntelliJ_Platform-2024.2-orange.svg)](https://www.jetbrains.org)
 
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
-- [ ] Adjust the [pluginGroup](./gradle.properties) and [pluginName](./gradle.properties), as well as the [id](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [ ] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the `MARKETPLACE_ID` in the above README badges. You can obtain it once the plugin is published to JetBrains Marketplace.
-- [ ] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
+An IntelliJ plugin that provides AI-powered code completions using locally running Ollama LLM with an efficient caching system.
 
-<!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+## Features
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+- Real-time code suggestions using local Ollama LLM
+- Intelligent prefix-based caching system for performance optimization
+- Inline completion rendering using IntelliJ's Inline Completion API
+- Support for multiple programming languages
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
-<!-- Plugin description end -->
+## Requirements
 
-## Installation
-
-- Using the IDE built-in plugin system:
-  
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "ai-code-completion-idea"</kbd> >
-  <kbd>Install</kbd>
-  
-- Using JetBrains Marketplace:
-
-  Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.
-
-  You can also download the [latest release](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID/versions) from JetBrains Marketplace and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
-
-- Manually:
-
-  Download the [latest release](https://github.com/Nikola352/ai-code-completion-idea/releases/latest) and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+- IntelliJ IDEA 2023.1 or newer
+- Ollama installed locally with the `codellama:7b-code` model
 
 
----
-Plugin based on the [IntelliJ Platform Plugin Template][template].
+## Setup Instructions
 
-[template]: https://github.com/JetBrains/intellij-platform-plugin-template
-[docs:plugin-description]: https://plugins.jetbrains.com/docs/intellij/plugin-user-experience.html#plugin-description-and-presentation
+### Step 1: Install Ollama
+1. Download and install [Ollama](https://ollama.ai/download) for your operating system
+2. Pull the CodeLlama model:
+```sh
+ollama pull codellama:7b-code
+```
+3. Ensure Ollama server is running:
+```sh
+ollama serve
+```
+
+### Step 2: Install the Plugin
+
+#### Option 1: Install from ZIP
+
+1. Download the ZIP archive from the [Releases section](https://github.com/Nikola352/ai-code-completion-idea/releases)
+2. In IntelliJ IDEA, go to:
+  - `Settings/Preferences` → `Plugins` → ⚙️ → `Install Plugin from Disk...`
+3. Select the downloaded ZIP file
+4. Restart the IDE
+
+#### Option 2: Run from Source
+
+- Clone the repository
+- Open the project in IntelliJ IDEA
+- Run the plugin using ./gradlew runIde
+
+## Usage
+
+Once installed and with Ollama running locally:
+
+1. Open any code file in IntelliJ IDEA
+2. Start typing code as usual
+3. The plugin will automatically suggest completions that appear as inline gray text
+4. Press Tab to accept the suggestion, or continue typing to ignore it
+
+## How it works
+
+## Ollama Integration
+
+The plugin connects to your locally running Ollama server to generate code completions based on the current file context. It sends the code prefix (everything before the cursor) to the Ollama API and displays the generated completion.
+
+## Caching Strategy
+
+The plugin implements an efficient trie-based caching system that:
+
+- Stores prefixes and their completions in a trie data structure
+- Enables partial matching so shorter prefixes can reuse results of longer queries
+- Employs a modified LRU eviction strategy that:
+- Identifies the least recently used completions (bottom 10%)
+  - Evicts the shortest completion from this pool
+  - Prioritizes retention of longer, more valuable completions
+
+This approach maximizes cache hits while maintaining reasonable memory usage, significantly reducing the number of API calls to the LLM.
+
+## Roadmap
+
+Future improvements planned for this plugin:
+
+- Settings menu for configuring options (model selection, temperature, etc.)
+- Status bar indicator showing plugin status and completion statistics
+- SimHash-based backup cache strategy for approximate matching
+- Support for more Ollama models and customization options
+
+## Feedback and Contributions
+
+Feedback and contributions are welcome! Please feel free to submit issues or pull requests on the GitHub repository.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/Nikola352/ai-code-completion-idea/blob/main/LICENSE) file for details.
