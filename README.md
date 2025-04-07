@@ -3,6 +3,7 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-2.1.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![IntelliJ Platform](https://img.shields.io/badge/IntelliJ_Platform-2024.2-orange.svg)](https://www.jetbrains.org)
 
+<!-- Plugin description -->
 An IntelliJ plugin that provides AI-powered code completions using locally running Ollama LLM with an efficient caching system.
 
 ## Features
@@ -11,6 +12,7 @@ An IntelliJ plugin that provides AI-powered code completions using locally runni
 - Intelligent prefix-based caching system for performance optimization
 - Inline completion rendering using IntelliJ's Inline Completion API
 - Support for multiple programming languages
+<!-- Plugin description end -->
 
 ## Requirements
 
