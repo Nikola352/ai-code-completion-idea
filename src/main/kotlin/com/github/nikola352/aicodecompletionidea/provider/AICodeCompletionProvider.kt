@@ -1,6 +1,7 @@
 package com.github.nikola352.aicodecompletionidea.provider
 
 import com.github.nikola352.aicodecompletionidea.llm.LLMCompletionService
+import com.github.nikola352.aicodecompletionidea.syntax.analyzer.shouldBeSkippedOnPosition
 import com.github.nikola352.aicodecompletionidea.util.splitUsingOffset
 import com.intellij.codeInsight.inline.completion.InlineCompletionEvent
 import com.intellij.codeInsight.inline.completion.InlineCompletionProvider
@@ -31,8 +32,9 @@ class AICodeCompletionProvider : InlineCompletionProvider {
         })
     }
 
-    // TODO: Check based on code context
     override fun isEnabled(event: InlineCompletionEvent): Boolean {
-        return event is InlineCompletionEvent.DocumentChange
+        return event is InlineCompletionEvent.DocumentChange && event.editor.run {
+            !document.text.shouldBeSkippedOnPosition(caretModel.offset)
+        }
     }
 }
