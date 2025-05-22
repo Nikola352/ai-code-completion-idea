@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.nikola352.ai-code-completion-idea</id>
+    <id>com.github.nikola352.ai-code-completion</id>
     <name>AI Code Completion</name>
     <vendor>Nikola352</vendor>
     <description>
