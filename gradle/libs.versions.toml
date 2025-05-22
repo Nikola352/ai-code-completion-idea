@@ -2,7 +2,7 @@
 # libraries
 junit = "4.13.2"
 opentest4j = "1.3.0"
-ollama4j = "1.0.93"
+ollama4j = "1.0.100"
 
 # plugins
 changelog = "2.2.1"
